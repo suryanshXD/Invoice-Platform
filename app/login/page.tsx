@@ -43,7 +43,7 @@ export default async function Login() {
                   placeholder="randonm@gmail.com"
                 />
               </div>
-              <SubmitButton />
+              <SubmitButton name="Login" />
             </form>
           </CardContent>
         </Card>
