@@ -16,7 +16,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export function InvoiceAction() {
+interface idInterface {
+  id: string;
+}
+
+export function InvoiceAction({ id }: idInterface) {
   return (
     <>
       <DropdownMenu>
@@ -27,12 +31,12 @@ export function InvoiceAction() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem asChild>
-            <Link href="">
+            <Link href={`/dashboard/invoices/${id}`}>
               <PencilIcon /> Edit Invoice
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="">
+            <Link href={`/api/invoice/${id}`} target="_blank">
               <DownloadCloudIcon /> Download Invoice
             </Link>
           </DropdownMenuItem>
