@@ -7,8 +7,34 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { InvoiceAction } from "./InvoiceActions";
+import { prisma } from "../utils/db";
+import { requireUser } from "../utils/hooks";
+import { formatCurrency } from "../utils/formatCurrency";
+import { Badge } from "@/components/ui/badge";
 
-export function InvoiceList() {
+async function getData(userId: string) {
+  const data = await prisma.invoice.findMany({
+    where: {
+      userId: userId,
+    },
+    select: {
+      id: true,
+      clientName: true,
+      total: true,
+      currency: true,
+      createdAt: true,
+      status: true,
+      invoiceNumber: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return data;
+}
+export async function InvoiceList() {
+  const session = await requireUser();
+  const data = await getData(session.user?.id as string);
   return (
     <>
       <Table>
@@ -23,16 +49,26 @@ export function InvoiceList() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell>1</TableCell>
-            <TableCell>Suryansh</TableCell>
-            <TableCell>10,000</TableCell>
-            <TableCell>Paid</TableCell>
-            <TableCell>29/03/2025</TableCell>
-            <TableCell className="text-right">
-              <InvoiceAction />
-            </TableCell>
-          </TableRow>
+          {data.map((invoice) => (
+            <TableRow key={invoice.id}>
+              <TableCell>#{invoice.invoiceNumber}</TableCell>
+              <TableCell>{invoice.clientName}</TableCell>
+              <TableCell>
+                {formatCurrency(invoice.total, invoice.currency as any)}
+              </TableCell>
+              <TableCell>
+                <Badge>{invoice.status}</Badge>
+              </TableCell>
+              <TableCell>
+                {new Intl.DateTimeFormat("en-US", {
+                  dateStyle: "medium",
+                }).format(invoice.createdAt)}
+              </TableCell>
+              <TableCell className="text-right">
+                <InvoiceAction />
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </>
