@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,12 +16,29 @@ import {
   Trash,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 interface idInterface {
   id: string;
 }
 
 export function InvoiceAction({ id }: idInterface) {
+  const handleReminder = () => {
+    toast.promise(
+      fetch(`/api/email/${id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      {
+        loading: "Sending reminder...",
+        success: "Reminder email sent successfully",
+        error: "Failed to send reminder email",
+      }
+    );
+  };
+
   return (
     <>
       <DropdownMenu>
@@ -40,13 +58,11 @@ export function InvoiceAction({ id }: idInterface) {
               <DownloadCloudIcon /> Download Invoice
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="">
-              <MailIcon /> Reminder Email
-            </Link>
+          <DropdownMenuItem onClick={handleReminder}>
+            <MailIcon /> Reminder Email
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="">
+            <Link href={`/dashboard/invoices/${id}/delete`}>
               <Trash color="red" /> Delete
             </Link>
           </DropdownMenuItem>
