@@ -20,9 +20,10 @@ import { toast } from "sonner";
 
 interface idInterface {
   id: string;
+  status: string;
 }
 
-export function InvoiceAction({ id }: idInterface) {
+export function InvoiceAction({ id, status }: idInterface) {
   const handleReminder = () => {
     toast.promise(
       fetch(`/api/email/${id}`, {
@@ -67,9 +68,11 @@ export function InvoiceAction({ id }: idInterface) {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="">
-              <CheckCircle /> Mark as Paid
-            </Link>
+            {status !== "PAID" && (
+              <Link href={`/dashboard/invoices/${id}/paid`}>
+                <CheckCircle /> Mark as Paid
+              </Link>
+            )}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
